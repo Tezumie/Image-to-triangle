@@ -4,7 +4,7 @@
 
 Transform any image into beautiful low-poly triangular art with a single line of code. **No dependencies, no build steps** — just add one `<script>` tag and you're ready to go.
 
-## 🎯 [Try the Live App](https://tezumie.github.io/Image-to-triangle/)
+## 🎯 [Try the Live App (👈 click here) ](https://tezumie.github.io/Image-to-triangle/)
 
 **Interactive image triangulator** — Drag & drop images, adjust settings in real-time, and export as PNG or SVG.
 
@@ -238,7 +238,12 @@ It’s designed to make experimenting with interactive visuals, generative art, 
 
 If you enjoy working with projects like this, give Codevre a try!
 
-
 ---
 
+## 🔗 Related Projects
+
+- [Image-to-Pixel](https://github.com/Tezumie/Image-to-Pixel) — A companion library for turning images into **dithered pixel art**.  
+
+---
 ⭐ **Star this repo if it helped you create something awesome!**
+
