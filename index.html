@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <title>Image-to-Triangle</title>
+   <link rel="stylesheet" type="text/css" href="app.css">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+   <link
+      href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet">
+   <script src="/src/image-to-triangle.js"></script>
+</head>
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+      // Load cached theme from localStorage
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+         document.body.classList.toggle('dark', savedTheme === 'dark');
+      } else {
+         // Optional: Set default theme based on system preference
+         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+         document.body.classList.toggle('dark', prefersDark);
+         localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
+      }
+      });
+
+      // Theme toggle function
+      function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      }
+
+      // Dropdown toggle function
+      function toggleDropdown(event) {
+      event.stopPropagation();
+      const content = event.currentTarget.nextElementSibling;
+      content.classList.toggle('show');
+      }
+
+      // Close dropdowns on click outside
+      document.addEventListener('click', function(event) {
+      document.querySelectorAll('.dropdown-content.show').forEach(el => {
+         if (!el.parentElement.contains(event.target)) {
+            el.classList.remove('show');
+         }
+      });
+      });
+</script>
+
+<body>
+   <div class="app">
+      <header>
+         <h1>Image-to-Triangle<i class="ti ti-triangle-filled icon"></i></h1>
+         <div class="actions">
+            <button id="generateBtn" class="btn" disabled>Generate Triangles</button>
+            <button id="exportPngBtn" class="btn secondary" disabled>Export PNG</button>
+
+            <button id="exportBtn" class="btn secondary" disabled>Export SVG</button>
+            <button class="theme-toggle btn" onclick="toggleTheme()">
+        <i class="ti ti-sun"></i> <!-- Change to ti-moon in JS if needed -->
+      </button>
+         </div>
+      </header>
+      <div class="content">
+         <aside>
+            <div class="group">
+               <h2>Source</h2>
+               <div class="control">
+                  <label>Source image</label>
+                  <input id="file" type="file" accept="image/*" />
+                  <small>Tip: high-contrast portraits work best. You can also drop an image onto the left preview.</small>
+               </div>
+               <div class="control">
+                  <label>Export width (px)</label>
+                  <input id="exportW" type="number" value="1200" min="300" max="6000" />
+                  <small>On-screen preview scales to fit; this only affects SVG export size.</small>
+               </div>
+            </div>
+            <div class="group">
+               <h2>Preprocessing</h2>
+               <div class="control">
+                  <label>Brightness</label>
+                  <div class="row">
+                     <input id="bright" type="range" min="0.2" max="2.0" step="0.01" value="1.00"/>
+                     <input id="brightNum" type="number" min="0.2" max="2.0" step="0.01" value="1.00"/>
+                  </div>
+               </div>
+               <div class="control">
+                  <label>Contrast</label>
+                  <div class="row">
+                     <input id="contrast" type="range" min="0.2" max="3.0" step="0.01" value="1.10"/>
+                     <input id="contrastNum" type="number" min="0.2" max="3.0" step="0.01" value="1.10"/>
+                  </div>
+               </div>
+               <div class="control">
+                  <label>Gamma</label>
+                  <div class="row">
+                     <input id="gamma" type="range" min="0.40" max="2.50" step="0.01" value="1.20"/>
+                     <input id="gammaNum" type="number" min="0.40" max="2.50" step="0.01" value="1.20"/>
+                  </div>
+                  <small>Applied per-channel after the other filters.</small>
+               </div>
+               <div class="control">
+                  <label>Saturation</label>
+                  <div class="row">
+                     <input id="saturate" type="range" min="0.01" max="3.0" step="0.01" value="1.0"/>
+                     <input id="saturateNum" type="number" min="0.01" max="3.0" step="0.01" value="1.0"/>
+                  </div>
+               </div>
+               <div class="control">
+                  <label>Blur (px)</label>
+                  <div class="row">
+                     <input id="blur" type="range" min="0" max="8" step="0.5" value="0"/>
+                     <input id="blurNum" type="number" min="0" max="8" step="0.5" value="0"/>
+                  </div>
+               </div>
+               <div class="control">
+                  <label>Invert</label>
+                  <div class="inline">
+                     <select id="invert">
+                                <option value="0" selected>Off</option>
+                                <option value="1">On</option>
+                            </select>
+                     <small>For light-on-dark sources.</small>
+                  </div>
+               </div>
+               <div class="control">
+                  <label>Density mode</label>
+                  <select id="densityMode">
+                            <option value="luma" selected>Luminance (default)</option>
+                            <option value="lumaBoost">Luminance + contrast boost</option>
+                            <option value="red">Use Red channel</option>
+                            <option value="green">Use Green channel</option>
+                            <option value="blue">Use Blue channel</option>
+                        </select>
+               </div>
+               <div class="control">
+                  <label>Edge boost</label>
+                  <div class="row">
+                     <input id="edgeBoost" type="range" min="0" max="2.0" step="0.05" value="0.75"/>
+                     <input id="edgeBoostNum" type="number" min="0" max="2.0" step="0.05" value="0.75"/>
+                  </div>
+                  <small>Higher = more points on edges (does not alter preview image).</small>
+               </div>
+            </div>
+            <div class="group">
+               <h2>Triangulation settings</h2>
+               <div class="control">
+                  <label>Points (density)</label>
+                  <div class="row">
+                     <input id="points" type="range" min="200" max="20000" value="2600"/>
+                     <input id="pointsNum" type="number" min="200" max="20000" value="2600"/>
+                  </div>
+                  <small>More points = more detail (and more time).</small>
+               </div>
+               <div class="control">
+                  <label>Dark strength</label>
+                  <div class="row">
+                     <input id="darkStrength" type="range" min="1" max="10" step="0.1" value="4.1"/>
+                     <input id="darkStrengthNum" type="number" min="1" max="10" step="0.1" value="4.1"/>
+                  </div>
+                  <small>Higher = stronger bias towards dark areas.</small>
+               </div>
+               <div class="control">
+                  <label>Min spacing (px)</label>
+                  <div class="row">
+                     <input id="minDist" type="range" min="1" max="20" step="0.5" value="8"/>
+                     <input id="minDistNum" type="number" min="1" max="20" step="0.5" value="8"/>
+                  </div>
+               </div>
+               <div class="control">
+                  <label>Edge samples</label>
+                  <div class="row">
+                     <input id="edgeSamples" type="range" min="0" max="50" step="1" value="20"/>
+                     <input id="edgeSamplesNum" type="number" min="0" max="50" step="1" value="35"/>
+                  </div>
+                  <small>Helpers per side for boundary stability.</small>
+               </div>
+               <div class="control">
+                  <label>Show wires</label>
+                  <select id="showWires">
+                            <option value="0" selected>Off</option>
+                            <option value="1">On</option>
+                        </select>
+               </div>
+
+               <div class="control">
+                  <label>Wire width</label>
+                  <div class="row">
+                     <input id="wireWidth" type="range" min="0.5" max="10" step="0.5" value="1"/>
+                     <input id="wireWidthNum" type="number" min="0.5" max="10" step="0.5" value="1"/>
+                  </div>
+               </div>
+
+               <div class="control">
+                  <label>Wire color</label>
+                  <input id="wireColor" type="color" value="#000000" disabled />
+                  <small>Choose wire color when "Show wires" is enabled.</small>
+               </div>
+               <div class="control" style="display: none">
+                  <label>Color adjustment</label>
+                  <div class="row">
+                     <input id="adjustment" type="range" min="0" max="100" step="1" value="30"/>
+                     <input id="adjustmentNum" type="number" min="0" max="100" step="1" value="30"/>
+                  </div>
+               </div>
+               <div class="control">
+                  <label>Random seed</label>
+                  <div class="row">
+                     <input id="seed" type="range" min="0" max="9999" step="1" value="0"/>
+                     <input id="seedNum" type="number" min="0" max="9999" step="1" value="0"/>
+                  </div>
+               </div>
+            </div>
+         </aside>
+         <section class="stage" id="previewStage">
+            <span class="label">Preprocessed image</span>
+            <canvas id="previewCanvas"></canvas>
+            <div class="hint" id="dropHint">Drop an image here, or use the file picker.</div>
+         </section>
+         <section class="stage" id="pathStage">
+            <!-- <span class="label">Triangulation output</span> -->
+            <canvas id="pathCanvas"></canvas>
+            <div id="progressWrap" class="progress" style="display:none">
+               <div id="progressBar" class="progress-bar"></div>
+               <span id="progressText" class="progress-text">0%</span>
+            </div>
+         </section>
+      </div>
+   </div>
+   <script src="/app.js"></script>
+</body>
+
+</html>
