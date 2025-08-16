@@ -4,7 +4,7 @@
 
 Transform any image into beautiful low-poly triangular art with a single line of code. **No dependencies, no build steps** — just add one `<script>` tag and you're ready to go.
 
-## 🎯 [Try the Live App](https://yourusername.github.io/image-to-triangle/)
+## 🎯 [Try the Live App](https://tezumie.github.io/Image-to-triangle/)
 
 **Interactive image triangulator** — Drag & drop images, adjust settings in real-time, and export as PNG or SVG.
 
@@ -27,7 +27,7 @@ Transform any image into beautiful low-poly triangular art with a single line of
 ### CDN (Recommended)
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/yourusername/image-to-triangle@latest/dist/image-to-triangle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Tezumie/Image-to-triangle/src/image-to-triangle.js"></script>
 ```
 
 ### Basic Usage
@@ -53,7 +53,7 @@ document.body.appendChild(result);
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://cdn.jsdelivr.net/gh/yourusername/image-to-triangle@latest/dist/image-to-triangle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/Tezumie/Image-to-triangle/src/image-to-triangle.js"></script>
 </head>
 <body>
   <img id="source" src="your-image.jpg" crossorigin="anonymous">
@@ -188,7 +188,7 @@ const result = await ImageToTriangle.triangulate({
 
 ## 🎯 Demos
 
-**🖼️ Web App** — [Try the hosted app](https://yourusername.github.io/image-to-triangle/)  
+**🖼️ Web App** — [Try the hosted app](https://tezumie.github.io/Image-to-triangle/)  
 *Interactive image triangulator with drag & drop, real-time preview, and PNG/SVG export*
 
 **💻 API Demo** — [Live code editor](https://codevre.com/editor?project=7kR8qQoxNCVu1AwDEoqetvzkVGC3_20250815193557929_rl39)  
@@ -240,4 +240,5 @@ If you enjoy working with projects like this, give Codevre a try!
 
 
 ---
+
 ⭐ **Star this repo if it helped you create something awesome!**
